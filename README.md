@@ -311,6 +311,25 @@ $ terser example.js -c passes=2 -m --mangle-props regex=/_$/
 ```javascript
 var x={o:3,t:1,calc:function(){return this.t+this.o},i:2};console.log(x.calc());
 ```
+Mangle all private class fields (this should generally be safe, unless you are using quoted properties that start with `#`):
+```javascript
+export class MyClass {
+  #someField = 5
+  someMethod() {
+    this.#someField = 42;
+  }
+};
+export const obj = {
+  ['#someField']: 42,
+};
+```
+
+```bash
+$ terser example2.js -c passes=2 -m --mangle-props regex=/^#/
+```
+```javascript
+export class MyClass{#s=5;someMethod(){this.#s=42}}export const obj={o:42};
+```
 
 Combining mangle properties options:
 ```bash
